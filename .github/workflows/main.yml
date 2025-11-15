@@ -40,9 +40,15 @@ jobs:
                 echo "${PWD}/mpbb" >> $GITHUB_PATH
                 echo "/opt/port/bin" >> $GITHUB_PATH
                 echo "/opt/port/sbin" >> $GITHUB_PATH
+          - name: Cache Primes
+            id: cache-primes
+            uses: actions/cache@v4
+            with:
+                path: /tmp/mpbb
+                key: ${{ matrix.os }}-mpbb-checkout
           - name: Checkout port tree
+            if: steps.cache-mptree.outputs.cache-hit != 'true'
             run: |
-              sudo mpbb --prefix /opt/port selfupdate
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 checkout \
                   --ports-url https://github.com/macports/macports-ports.git
