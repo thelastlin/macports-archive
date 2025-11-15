@@ -43,14 +43,14 @@ jobs:
           - name: Install specified ports
             run: |
               set -eux
-              mpbb --prefix /opt/port selfupdate
-              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+              sudo mpbb --prefix /opt/port selfupdate
+              sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 checkout \
                   --ports-url https://github.com/macports/macports-ports.git
-              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+              sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-dependencies ${{ github.event.inputs.port }}
-              mpbb --prefix /opt/port install-port ${{ github.event.inputs.port }}
-              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+              sudo mpbb --prefix /opt/port install-port ${{ github.event.inputs.port }}
+              sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 gather-archives ${{ github.event.inputs.port }} \
                   --archive-site https://packages.macports.org \
                   --staging-dir /tmp/mpbb/staging
