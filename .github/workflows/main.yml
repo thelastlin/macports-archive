@@ -53,15 +53,21 @@ jobs:
                 checkout \
                   --ports-url https://github.com/macports/macports-ports.git
 
-          - name: Install specified ports
+          - name: Install specified port dependencies
             run: |
-              set -eux
+              set -eu
               sudo mkdir -p /tmp/mpbb/logs
               sudo touch /tmp/mpbb/logs/dependencies-progress.txt
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-dependencies ${{ github.event.inputs.port }}
+          - name: Build specified port
+            run: |
+              set -eu
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-port ${{ github.event.inputs.port }}
+          - name: Gather Port Archive
+            run: |
+              set -eu
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 gather-archives ${{ github.event.inputs.port }} \
                   --archive-site https://packages.macports.org \
