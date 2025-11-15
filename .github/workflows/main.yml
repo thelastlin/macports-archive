@@ -34,7 +34,12 @@ jobs:
             run: |
                 chmod +x ./port-ci-files/.github/workflows/bootstrap.sh
                 sudo ./port-ci-files/.github/workflows/bootstrap.sh mpbb
-          
+          - name: Setup mpbb environment
+            run: |
+                echo "/opt/mports/bin" >> $GITHUB_PATH
+                echo "${PWD}/mpbb" >> $GITHUB_PATH
+                echo "/opt/port/bin" >> $GITHUB_PATH
+                echo "/opt/port/sbin" >> $GITHUB_PATH
           - name: Install specified ports
             run: |
               set -eux
