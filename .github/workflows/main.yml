@@ -68,11 +68,12 @@ jobs:
           - name: Gather Port Archive
             run: |
               set -eu
+              # Intentionally use example.org as archive site to ignore checking existing archives 
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
-                gather-archives ${{ github.event.inputs.port }} \
-                  --archive-site https://packages.macports.org \
+                gather-archives \
+                  --archive-site https://example.org \
                   --staging-dir /tmp/mpbb/staging
-                  
+ 
           - name: Upload Port Archive
             uses: actions/upload-artifact@v4
             with:
