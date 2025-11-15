@@ -1,0 +1,59 @@
+---
+name: "Create MacPorts Port Archive"
+
+on:
+  workflow_dispatch:
+    inputs:
+        port:
+            description: "Port to make archive"
+            required: true
+
+jobs:
+    build:
+        name: ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+          matrix:
+            os: [macos-14, macos-15, macos-26]
+
+        steps:
+          - name: Checkout self
+            uses: actions/checkout@v4
+            with:
+              path: port-ci-files
+              fetch-depth: 1
+              show-progress: true
+          - name: Checkout mpbb
+            uses: actions/checkout@v4
+            with:
+              fetch-depth: 1
+              repository: macports/mpbb
+              path: mpbb
+              show-progress: true
+          - name: Bootstrap MacPorts
+            run: |
+                chmod +x ./port-ci-files/.github/workflows/bootstrap.sh
+                sudo ./port-ci-files/.github/workflows/bootstrap.sh mpbb
+          
+          - name: Install specified ports
+            run: |
+              set -eux
+              mpbb --prefix /opt/port selfupdate
+              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+                checkout \
+                  --ports-url https://github.com/macports/macports-ports.git
+              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+                install-dependencies ${{ github.event.inputs.port }}
+              mpbb --prefix /opt/port install-port ${{ github.event.inputs.port }}
+              mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+                gather-archives ${{ github.event.inputs.port }} \
+                  --archive-site https://packages.macports.org \
+                  --staging-dir /tmp/mpbb/staging
+                  
+          - name: Upload Port Archive
+            uses: actions/upload-artifact@v4
+            with:
+              name: port-archive-${{ github.event.inputs.port }}-${{ matrix.os }}
+              path: /tmp/mpbb/staging/
+            
+              
