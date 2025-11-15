@@ -124,6 +124,10 @@ echo "preferred_hosts mirror.fcix.net github.com *.github.com" | sudo tee -a /op
 endgroup
 
 
+# Do not update PortIndex at here
+
+if false; then
+
 if [ -n "$MPBB" ] ; then
 begingroup "Updating PortIndex"
 ## Run portindex on recent commits if PR is newer
@@ -141,9 +145,10 @@ git -C ports/ checkout -qf -
 (cd ports/ && portindex -e)
 endgroup
 fi
+fi
 
 
 begingroup "Running postflight"
 # Create macports user
-sudo /opt/local/libexec/macports/postflight/postflight
+sudo /opt/port/libexec/macports/postflight/postflight
 endgroup
