@@ -40,8 +40,8 @@ jobs:
                 echo "${PWD}/mpbb" >> $GITHUB_PATH
                 echo "/opt/port/bin" >> $GITHUB_PATH
                 echo "/opt/port/sbin" >> $GITHUB_PATH
-          - name: Cache Primes
-            id: cache-primes
+          - name: Cache checkout mptree
+            id: cache-mptree
             uses: actions/cache@v4
             with:
                 path: /tmp/mpbb
@@ -56,9 +56,12 @@ jobs:
           - name: Install specified ports
             run: |
               set -eux
+              sudo mkdir -p /tmp/mpbb/logs
+              sudo touch /tmp/mpbb/logs/dependencies-progress.txt
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-dependencies ${{ github.event.inputs.port }}
-              sudo mpbb --prefix /opt/port install-port ${{ github.event.inputs.port }}
+              sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
+                install-port ${{ github.event.inputs.port }}
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 gather-archives ${{ github.event.inputs.port }} \
                   --archive-site https://packages.macports.org \
