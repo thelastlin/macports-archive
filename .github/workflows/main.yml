@@ -40,13 +40,16 @@ jobs:
                 echo "${PWD}/mpbb" >> $GITHUB_PATH
                 echo "/opt/port/bin" >> $GITHUB_PATH
                 echo "/opt/port/sbin" >> $GITHUB_PATH
-          - name: Install specified ports
+          - name: Checkout port tree
             run: |
-              set -eux
               sudo mpbb --prefix /opt/port selfupdate
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 checkout \
                   --ports-url https://github.com/macports/macports-ports.git
+
+          - name: Install specified ports
+            run: |
+              set -eux
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-dependencies ${{ github.event.inputs.port }}
               sudo mpbb --prefix /opt/port install-port ${{ github.event.inputs.port }}
