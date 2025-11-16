@@ -60,11 +60,20 @@ jobs:
               sudo touch /tmp/mpbb/logs/dependencies-progress.txt
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-dependencies ${{ github.event.inputs.port }}
+
           - name: Build specified port
             run: |
               set -eu
               sudo mpbb --prefix /opt/port --work-dir /tmp/mpbb \
                 install-port ${{ github.event.inputs.port }}
+
+          - name: Append deps to archive list
+            run: |
+             set -eu
+             list_file="/tmp/mpbb/requested_port"
+             cat $list_file
+             echo "file:///tmp/mpbb/ports [nosync]" | sudo tee -a /opt/port/etc/macports/sources.conf
+             port -d echo depof:${{ github.event.inputs.port }} | sudo tee -a $list_file
           - name: Gather Port Archive
             run: |
               set -eu
